@@ -84,7 +84,7 @@ final class CameraService: NSObject, AVCaptureVideoDataOutputSampleBufferDelegat
         guard ts - lastAnalysisTimestamp >= sampleInterval else { return }
         lastAnalysisTimestamp = ts
         // TODO(M4): 根据 UIDevice.current.orientation 传入真实方向，先按竖屏处理
-        onFrame?(pixelBuffer, .portrait)
+        onFrame?(pixelBuffer, .up)
     }
 }
 
