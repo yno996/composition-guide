@@ -22,11 +22,18 @@ final class ViewfinderModel: ObservableObject {
             let camera = CameraService()
             do {
                 try camera.configure(frameSampleMs: config.analyze.frameSampleMs)
+                // 将 vision/config 以局部变量捕获进闭包，避免跨线程访问 MainActor 隔离属性
+                let vision = VisionService(config: config)
+                let cfg = config
                 camera.onFrame = { [weak self] pixelBuffer, orientation in
-                    self?.processFrame(pixelBuffer: pixelBuffer, orientation: orientation)
+                    let output = vision.analyze(pixelBuffer: pixelBuffer, orientation: orientation)
+                    let result = CompositionEngine.analyze(output.features, config: cfg)
+                    Task { @MainActor [weak self] in
+                        self?.apply(output: output, result: result)
+                    }
                 }
-                vision = VisionService(config: config)
                 self.camera = camera
+                self.vision = vision
             } catch {
                 currentSuggestion = error.localizedDescription
             }
@@ -40,16 +47,7 @@ final class ViewfinderModel: ObservableObject {
         camera?.capturePhoto(completion: completion)
     }
 
-    // MARK: - 帧处理（相机回调线程 → 主线程更新 UI）
-
-    private nonisolated func processFrame(pixelBuffer: CVPixelBuffer, orientation: CGImagePropertyOrientation) {
-        guard let vision = vision else { return }
-        let output = vision.analyze(pixelBuffer: pixelBuffer, orientation: orientation)
-        let result = CompositionEngine.analyze(output.features, config: config)
-        Task { @MainActor in
-            apply(output: output, result: result)
-        }
-    }
+    // MARK: - 帧分析结果回到主线程更新 UI
 
     private func apply(output: VisionService.Output, result: CompositionResult) {
         score = result.score
@@ -94,17 +92,17 @@ struct CompositionOverlay: View {
 
             // 次级检出框（暗黄细框）
             for d in detections where d.rect != subjectRect {
-                context.stroke(Path(rect: flip(d.rect, w, h)), with: .color(.yellow.opacity(0.45)), lineWidth: 1)
+                context.stroke(Path(cgRect: flip(d.rect, w, h)), with: .color(.yellow.opacity(0.45)), lineWidth: 1)
             }
 
             // 人脸框（蓝色）
             for face in faceRects {
-                context.stroke(Path(rect: flip(face, w, h)), with: .color(.cyan), lineWidth: 2)
+                context.stroke(Path(cgRect: flip(face, w, h)), with: .color(.cyan), lineWidth: 2)
             }
 
             // 主体框（绿色）
             if let rect = subjectRect {
-                context.stroke(Path(rect: flip(rect, w, h)), with: .color(.green), lineWidth: 2.5)
+                context.stroke(Path(cgRect: flip(rect, w, h)), with: .color(.green), lineWidth: 2.5)
             }
 
             // 地平线（橙色）：过 (0.5, yPos) 以 tan(angle) 为斜率的直线
