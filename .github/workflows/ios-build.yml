@@ -1,5 +1,4 @@
 # iOS 云端构建流水线（GitHub 免费云端 Mac）
-# 公开仓库：免费不限量；私有仓库：每月 2000 分钟（macOS 按10倍计≈200分钟）
 name: ios-build
 
 on:
@@ -10,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: macos-15
+    defaults:
+      run:
+        working-directory: CompositionGuide
     steps:
       - uses: actions/checkout@v4
 
@@ -44,4 +46,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: CompositionGuide-ipa
-          path: CompositionGuide-unsigned.ipa
+          path: CompositionGuide/CompositionGuide-unsigned.ipa
