@@ -1,0 +1,18 @@
+# Python 原型
+__pycache__/
+ai-composition/output/
+# 个人照片，绝不入仓库
+ai-composition/photos/
+# WorkBuddy 内部备忘
+.workbuddy/
+
+# iOS 构建产物
+build/
+DerivedData/
+*.ipa
+*.xcodeproj
+xcuserdata/
+
+# 系统文件
+.DS_Store
+Thumbs.db

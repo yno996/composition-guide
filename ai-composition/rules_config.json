@@ -1,0 +1,36 @@
+{
+  "analyze": {
+    "long_edge": 960,
+    "frame_sample_ms": 300
+  },
+  "subject": {
+    "noise_area_ratio": 0.01,
+    "min_area_ratio": 0.02,
+    "max_area_ratio": 0.6,
+    "top_margin": 0.08,
+    "yolo_conf": 0.35,
+    "yolo_min_area_ratio": 0.06,
+    "face_score": 0.6,
+    "body_extend_ratio": 2.2,
+    "body_width_extend": 0.4
+  },
+  "thirds": {
+    "point_tolerance": 0.09,
+    "center_tolerance": 0.1,
+    "penalty_center": 20,
+    "penalty_off_point": 8
+  },
+  "horizon": {
+    "max_candidate_angle_deg": 10.0,
+    "edge_margin": 0.12,
+    "tilt_warn_deg": 1.5,
+    "position_tolerance": 0.1,
+    "penalty_tilt": 15,
+    "penalty_position": 12
+  },
+  "penalty": {
+    "too_small": 10,
+    "too_large": 5,
+    "top_crowded": 8
+  }
+}

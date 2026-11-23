@@ -1,0 +1,35 @@
+name: CompositionGuide
+options:
+  bundleIdPrefix: com.guide
+  deploymentTarget:
+    iOS: "16.0"
+
+settings:
+  base:
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_KEY_NSCameraUsageDescription: "需要使用相机进行实时构图指导"
+    INFOPLIST_KEY_UILaunchScreen_Generation: YES
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  CompositionGuide:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Core
+      - path: Features
+      - path: Resources
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.guide.composition
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+
+  CompositionGuideTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: CompositionGuide

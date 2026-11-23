@@ -1,0 +1,9 @@
+# AI 构图 App 阶段0 原型依赖（版本为当前已验证通过的）
+# 安装：python -m pip install -r requirements.txt
+# 注意：不要单独安装 opencv-python（无 contrib），会覆盖 cv2.saliency 模块
+opencv-contrib-python==5.1.0.95
+numpy==2.5.5
+pillow==13.0.0
+pillow-heif==1.8.1
+ultralytics==8.4.216   # YOLOv8n 主体检测（自动带 PyTorch CPU 版，体积较大）
+

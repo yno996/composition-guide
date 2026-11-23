@@ -1,0 +1,47 @@
+# iOS 云端构建流水线（GitHub 免费云端 Mac）
+# 公开仓库：免费不限量；私有仓库：每月 2000 分钟（macOS 按10倍计≈200分钟）
+name: ios-build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 XcodeGen（从 project.yml 生成 Xcode 工程）
+        run: brew install xcodegen
+
+      - name: 生成工程
+        run: xcodegen generate
+
+      - name: 跑单元测试（模拟器）
+        run: |
+          xcodebuild test \
+            -project CompositionGuide.xcodeproj \
+            -scheme CompositionGuide \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: 打未签名 IPA（供 Windows Sideloadly 重签装机）
+        run: |
+          xcodebuild build \
+            -project CompositionGuide.xcodeproj \
+            -scheme CompositionGuide \
+            -configuration Release \
+            -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO \
+            -derivedDataPath build
+          mkdir -p Payload
+          cp -r build/Build/Products/Release-iphoneos/CompositionGuide.app Payload/
+          zip -qry CompositionGuide-unsigned.ipa Payload
+
+      - name: 上传 IPA 构件
+        uses: actions/upload-artifact@v4
+        with:
+          name: CompositionGuide-ipa
+          path: CompositionGuide-unsigned.ipa
