@@ -92,17 +92,17 @@ struct CompositionOverlay: View {
 
             // 次级检出框（暗黄细框）
             for d in detections where d.rect != subjectRect {
-                context.stroke(Path(cgRect: flip(d.rect, w, h)), with: .color(.yellow.opacity(0.45)), lineWidth: 1)
+                context.stroke(Path { $0.addRect(flip(d.rect, w, h)) }, with: .color(.yellow.opacity(0.45)), lineWidth: 1)
             }
 
             // 人脸框（蓝色）
             for face in faceRects {
-                context.stroke(Path(cgRect: flip(face, w, h)), with: .color(.cyan), lineWidth: 2)
+                context.stroke(Path { $0.addRect(flip(face, w, h)) }, with: .color(.cyan), lineWidth: 2)
             }
 
             // 主体框（绿色）
             if let rect = subjectRect {
-                context.stroke(Path(cgRect: flip(rect, w, h)), with: .color(.green), lineWidth: 2.5)
+                context.stroke(Path { $0.addRect(flip(rect, w, h)) }, with: .color(.green), lineWidth: 2.5)
             }
 
             // 地平线（橙色）：过 (0.5, yPos) 以 tan(angle) 为斜率的直线
