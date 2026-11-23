@@ -33,3 +33,15 @@ targets:
       - path: Tests
     dependencies:
       - target: CompositionGuide
+
+schemes:
+  CompositionGuide:
+    build:
+      targets:
+        CompositionGuide: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - CompositionGuideTests
